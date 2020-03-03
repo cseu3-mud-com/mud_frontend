@@ -5,7 +5,7 @@ import { userTokenKey } from './config';
 
 const LoginForm = props => {
   const login = () => {
-    axios()
+    axios(false)
       .post("api/login/", {
         username: inputs.username,
         password: inputs.password
