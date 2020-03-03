@@ -7,7 +7,9 @@ import generateMaze from 'generate-maze';
 const mazeSize = 14;
 const DrawMap = styled.div`
   line-height: 0;
-  max-width: calc(${mazeSize} * 50px)
+  max-width: calc(${mazeSize} * 50px);
+  border: 1px solid #000;
+  padding: 1px;
 `;
 
 const DrawRoom = styled.div`
