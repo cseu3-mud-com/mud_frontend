@@ -1,14 +1,18 @@
 import axios from 'axios';
+import { baseUrl, userTokenKey } from "./config";
 
 export default (useAuth = true) => {
   const options = {
-    baseURL: 'https://mud-api-20.herokuapp.com/'
+    headers: {
+      "Content-Type": "application/json",
+    },
+    baseURL: baseUrl
   }
   
   if (useAuth) {
-    const userToken = localStorage.getItem('mud_token');
+    const userToken = localStorage.getItem(userTokenKey);
     options.headers = {
-      "Authentication": `Token ${userToken}`
+      "Authorization": `${userToken}`
     }
   }
 
