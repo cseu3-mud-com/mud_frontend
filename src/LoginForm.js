@@ -7,8 +7,9 @@ const LoginForm = props => {
     alert("Login Successful");
 
     axios
-      .post("/login", {
-        Email: inputs.email,
+      .post("https://mud-api-20.herokuapp.com/api/login/", {
+        username: inputs.username,
+        email: inputs.email,
         password: inputs.password
       })
       .then(res => {
@@ -17,13 +18,22 @@ const LoginForm = props => {
         props.history.push("/gamemenu");
       });
   };
-
   const { inputs, handleInputChange, handleSubmit } = useForm(login);
 
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label>Email Address</label>
+        <label>Username</label>
+        <input
+          type="text"
+          name="username"
+          onChange={handleInputChange}
+          value={inputs.username}
+          required
+        />
+      </div>
+      <div>
+        <label>Email</label>
         <input
           type="email"
           name="email"
