@@ -4,8 +4,10 @@ import styled from 'styled-components';
 
 import generateMaze from 'generate-maze';
 
+const mazeSize = 14;
 const DrawMap = styled.div`
   line-height: 0;
+  max-width: calc(${mazeSize} * 50px)
 `;
 
 const DrawRoom = styled.div`
@@ -19,19 +21,19 @@ const DrawRoom = styled.div`
   font-family: 'Arial';
   &.top {
     margin-top: -1px;
-    border-top: 1px solid blue;
+    border-top: 1px solid white;
   }
   &.bottom {
     margin-bottom: -1px;
-    border-bottom: 1px solid blue;
+    border-bottom: 1px solid white;
   }
   &.left {
     margin-left: -1px;
-    border-left: 1px solid blue;
+    border-left: 1px solid white;
   }
   &.right {
     margin-right: -1px;
-    border-right: 1px solid blue;
+    border-right: 1px solid white;
   }
   &.left.right {
     margin-left: -1px;
@@ -52,7 +54,7 @@ const InfoRoom = styled.div`
 `
 
 function GameMap() {
-  const maze = generateMaze(20);
+  const maze = generateMaze(mazeSize);
   const [colors, setColors] = useState([])
   console.log(maze);
 
