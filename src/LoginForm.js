@@ -1,9 +1,21 @@
 import React from "react";
+import axios from "axios";
 import useForm from "./CustomHooks";
 
-const LoginForm = () => {
+const LoginForm = props => {
   const login = () => {
     alert("Login Successful");
+
+    axios
+      .post("/login", {
+        Email: inputs.email,
+        password: inputs.password
+      })
+      .then(res => {
+        // debugger
+        localStorage.setItem("token", res.data.payload);
+        props.history.push("/gamemenu");
+      });
   };
 
   const { inputs, handleInputChange, handleSubmit } = useForm(login);
@@ -24,20 +36,12 @@ const LoginForm = () => {
         <label>Password</label>
         <input
           type="password"
-          name="password1"
+          name="password"
           onChange={handleInputChange}
-          value={inputs.password1}
+          value={inputs.password}
         />
       </div>
-      <div>
-        <label>Re-enter Password</label>
-        <input
-          type="password"
-          name="password2"
-          onChange={handleInputChange}
-          value={inputs.password2}
-        />
-      </div>
+
       <button type="submit">Login</button>
     </form>
   );
