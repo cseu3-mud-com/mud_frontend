@@ -1,23 +1,20 @@
-import React from 'react';
-import './App.css';
-import GameCharCreator from './GameCharCreator';
-import GameMenu from './GameMenu';
-import GameMap from './GameMap';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route
-} from "react-router-dom";
-
+import React from "react";
+import "./App.css";
+import GameCharCreator from "./GameCharCreator";
+import GameMenu from "./GameMenu";
+import GameMap from "./GameMap";
+import Landing from "./Landing";
+import SignupForm from "./SignupForm";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 function App() {
-
   return (
     <Router>
       <Switch>
-        <Route exact path="/">
-          <GameMenu />
-        </Route>
+        <Route exact path="/" component={Landing} />
+        <Route path="/signup" component={SignupForm} />
+        {/* <GameMenu /> */}
+        {/* </Route> */}
         <Route path="/character">
           <GameCharCreator />
         </Route>
