@@ -12,7 +12,35 @@ const DrawRoom = styled.div`
   display: inline-block;
   width: 50px;
   height: 50px;
-  background: rgb(230,230,230);
+  line-height: 48px;
+  text-align: center;
+  color: white;
+  position: relative;
+  font-family: 'Arial';
+  &.top {
+    margin-top: -1px;
+    border-top: 1px solid blue;
+  }
+  &.bottom {
+    margin-bottom: -1px;
+    border-bottom: 1px solid blue;
+  }
+  &.left {
+    margin-left: -1px;
+    border-left: 1px solid blue;
+  }
+  &.right {
+    margin-right: -1px;
+    border-right: 1px solid blue;
+  }
+  &.left.right {
+    margin-left: -1px;
+    margin-right: -1px;
+  }
+  &.top.bottom {
+    margin-top: -1px;
+    margin-bottom: -1px;
+  }
 `
 const InfoRoom = styled.div`
   display: block;
@@ -25,6 +53,7 @@ const InfoRoom = styled.div`
 
 function GameMap() {
   const maze = generateMaze(20);
+  const [colors, setColors] = useState([])
   console.log(maze);
 
   if (maze.length > 0) {
@@ -34,7 +63,13 @@ function GameMap() {
           (row, r) =>
             row.map(
               (cell, c) =>
-                <Room key={`${r}-${c}`} draw {...cell} />
+                <Room
+                  key={`${r}-${c}`}
+                  draw
+                  {...cell}
+                  colors={colors}
+                  setColors={setColors}
+                />
             )
         )
       }
@@ -46,20 +81,20 @@ function GameMap() {
 
 function Room(props) {
   if (props.draw) {
-    let marginTop = 0
-    let marginLeft = 0
-    if (props.top === true) marginTop--;
-    if (props.bottom === true) marginTop--;
-    if (props.left === true) marginLeft--;
-    if (props.right === true) marginLeft--;
-    return <DrawRoom style={{
-      borderTop: (props.top === true ? '1px solid red' : null),
-      borderBottom: (props.bottom === true ? '1px solid red' : null),
-      borderLeft: (props.left === true ? '1px solid red' : null),
-      borderRight: (props.right === true ? '1px solid red' : null),
-      marginTop: marginTop + 'px',
-      marginLeft: marginLeft + 'px'
-    }} />
+    const { x, y, top, bottom, left, right, set, colors, setColors } = props
+    if (!colors[set]) {
+      setColors(_c => {
+        _c[set] = `rgba(${set * Math.random()* 10},${set * Math.random()* 10},${set * Math.random()* 10},1)`;
+        return _c
+      });
+    }
+    return <DrawRoom className={`room 
+    room_${x}_${y}
+    ${top === true ? 'top' : ''}
+    ${bottom === true ? 'bottom' : ''}
+    ${left === true ? 'left' : ''}
+    ${right === true ? 'right' : ''}`
+    } style={{ backgroundColor: colors[set] }}>{`${set}`}</DrawRoom>
   } else {
     return <InfoRoom>
       <p></p>
