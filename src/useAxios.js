@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export default (useAuth = false) => {
+export default (useAuth = true) => {
   const options = {
     baseURL: 'https://mud-api-20.herokuapp.com/'
   }
