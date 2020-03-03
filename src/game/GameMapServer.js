@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import axios from '../hooks/useAxios';
-import MainContext from '../context';
+import useRooms from './../context/rooms';
 
 
-const mapSize = 42;
-const spaceBetweenRooms = 2;
+const mapSize = 15;
 const roomSize = 25;
 const DrawMap = styled.div`
   max-width: calc(${mapSize} * ${roomSize}px);
@@ -25,39 +24,14 @@ const DrawCell = styled.div`
   }
 `;
 
-function GameMapServer() {
-  let { init } = useContext(MainContext);
-  const [gameMap, setMap] = useState([]);
-  const [rooms, setRooms] = useState([]);
+function GameMapServer(props) {
+  const [roomState, roomActions] = useRooms();
   const [playerTravel, setPlayerTravel] = useState('');
-
+  const { gameMap, rooms } = roomState;
   useEffect(() => {
-    if (rooms.length <= 0) {
-      axios(true).get('api/adv/rooms/').then(res => {
-        setRooms(res.data.rooms);
-      })
-    }
-  }, []);
-
-  useEffect(() => {
-    if (rooms.length > 0 && gameMap.length === 0) {
-      setMap(map => {
-        const newMap = [];
-        for (let i = 0; i < mapSize; i++) {
-          newMap.push([]);
-          for (let j = 0; j < mapSize; j++) {
-            newMap[i].push(0);
-          }
-        }
-
-        const position = mapSize / 2;
-        drawInMap(newMap, position, position, rooms[0].id);
-
-        return newMap;
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rooms])
+    console.log('here?')
+    if (!roomState.rooms.length > 0) roomActions.getRooms();
+  }, [roomState, roomActions]);
 
   useEffect(() => {
     if (playerTravel !== '') {
@@ -68,49 +42,14 @@ function GameMapServer() {
     }
   }, [playerTravel])
 
-  const roomsInMap = []
-  const drawInMap = (map, x, y, currentRoom) => {
-    if (currentRoom > 0) {
-      if (!roomsInMap.includes(currentRoom)) {
-        roomsInMap.push(currentRoom);
-        map[x][y] = currentRoom;
-        const findRoom = rooms.find(room => room.id === currentRoom);
-        //console.log('drawing:', currentRoom)
-        // draw connection to the north if there is one
-        if (findRoom.n_to > 0) {
-          //console.log('drawing north of', currentRoom, 'which is', findRoom.n_to)
-          drawInMap(map, x - spaceBetweenRooms, y, findRoom.n_to)
-        }
-        // draw connection to the south if there is one
-        if (findRoom.s_to > 0) {
-          //console.log('drawing south of', currentRoom, 'which is', findRoom.s_to)
-          drawInMap(map, x + spaceBetweenRooms, y, findRoom.s_to)
-        }
-        // draw connection to the west if there is one
-        if (findRoom.w_to > 0) {
-          //console.log('drawing west of', currentRoom, 'which is', findRoom.w_to)
-          drawInMap(map, x, y - spaceBetweenRooms, findRoom.w_to)
-        }
-        // draw connection to the east if there is one
-        if (findRoom.e_to > 0) {
-          //console.log('drawing east of', currentRoom, 'which is', findRoom.e_to)
-          drawInMap(map, x, y + spaceBetweenRooms, findRoom.e_to)
-        }
-      }
-    } else {
-      map[x][y] = 0
-    }
-  }
-
   const changePlayerDirection = (e) => {
     const { value } = e.target;
     setPlayerTravel(value)
   }
-
+  
   if (gameMap.length > 0 && rooms.length > 0) {
-    console.log(gameMap);
-    console.log(rooms);
-
+    console.log('gameMap', gameMap);
+    console.log('rooms', rooms);
     return <>
       <DrawMap>
         {
