@@ -5,6 +5,7 @@ import GameMenu from "./GameMenu";
 import GameMap from "./GameMap";
 import Landing from "./Landing";
 import SignupForm from "./SignupForm";
+import LoginForm from "./LoginForm";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
       <Switch>
         <Route exact path="/" component={Landing} />
         <Route path="/signup" component={SignupForm} />
+        <Route path="/login" component={LoginForm} />
         {/* <GameMenu /> */}
         {/* </Route> */}
         <Route path="/character">
