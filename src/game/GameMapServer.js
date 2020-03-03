@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import axios from '../hooks/useAxios';
+import MainContext from '../context';
+
 
 const mapSize = 42;
 const spaceBetweenRooms = 2;
@@ -24,6 +26,7 @@ const DrawCell = styled.div`
 `;
 
 function GameMapServer() {
+  let { init } = useContext(MainContext);
   const [gameMap, setMap] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [playerTravel, setPlayerTravel] = useState('');

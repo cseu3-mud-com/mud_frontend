@@ -14,20 +14,28 @@ import {
   Route
 } from "react-router-dom";
 
+import MainContext from './context';
+import { useState } from 'react';
 
 function App() {
+  const [init, setInit] = useState({});
   return (
-    <Router>
-      <Switch>
-        <Route exact path="/" component={Landing} />
-        <Route path="/signup" component={SignupForm} />
-        <Route path="/login" component={LoginForm} />
-        <PrivateRoute path="/gamemenu" component={GameMenu} />
-        <PrivateRoute path="/character" component={GameCharCreator} />
-        <PrivateRoute path="/map" component={GameMap} />
-        <PrivateRoute path="/mapServer" component={GameMapServer} />
-      </Switch>
-    </Router>
+    <MainContext.Provider value={{
+      init,
+      setInit
+    }}>
+      <Router>
+        <Switch>
+          <Route exact path="/" component={Landing} />
+          <Route path="/signup" component={SignupForm} />
+          <Route path="/login" component={LoginForm} />
+          <PrivateRoute path="/gamemenu" component={GameMenu} />
+          <PrivateRoute path="/character" component={GameCharCreator} />
+          <PrivateRoute path="/map" component={GameMap} />
+          <PrivateRoute path="/mapServer" component={GameMapServer} />
+        </Switch>
+      </Router>
+    </MainContext.Provider>
   );
 }
 
