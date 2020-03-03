@@ -1,12 +1,13 @@
 import React from "react";
-import axios from "axios";
 import useForm from "./CustomHooks";
+import axiosWithAuth from "./auth";
 
 const LoginForm = props => {
   const login = () => {
     alert("Login Successful");
 
-    axios
+    // axios
+    axiosWithAuth()
       .post("https://mud-api-20.herokuapp.com/api/login/", {
         username: inputs.username,
         email: inputs.email,
@@ -14,7 +15,8 @@ const LoginForm = props => {
       })
       .then(res => {
         // debugger
-        localStorage.setItem("token", res.data.payload);
+        // console.log(res, "lllllll");
+        localStorage.setItem("token", res.data.key);
         props.history.push("/gamemenu");
       });
   };
