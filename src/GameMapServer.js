@@ -58,6 +58,7 @@ function GameMapServer() {
         return newMap;
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rooms])
 
   const roomsInMap = []
