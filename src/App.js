@@ -3,6 +3,7 @@ import './App.css';
 import GameCharCreator from './GameCharCreator';
 import GameMenu from './GameMenu';
 import GameMap from './GameMap';
+import GameMapServer from './GameMapServer';
 import {
   BrowserRouter as Router,
   Switch,
@@ -23,6 +24,9 @@ function App() {
         </Route>
         <Route path="/map">
           <GameMap />
+        </Route>
+        <Route path="/mapServer">
+          <GameMapServer />
         </Route>
       </Switch>
     </Router>
