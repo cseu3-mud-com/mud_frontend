@@ -1,6 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react';
-import CharOptions from './CharOptions';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import useDebounce from './useDebounce';
 
@@ -10,6 +8,7 @@ const Canvas = styled.canvas`
 `;
 
 function GameCharCreator() {
+  // eslint-disable-next-line no-unused-vars
   const [customization, setCustomization] = useState({
     'sex': {
       types: ['male', 'female'],
@@ -76,23 +75,7 @@ function GameCharCreator() {
       sprites: []
     },
   });
-  const [layers, setLayers] = useState([
-    'sex',
-    'body',
-    'hats',
-    'hair',
-    'eyes',
-    'facial',
-    'nose',
-    'ears',
-    'jacket',
-    'clothes',
-    'legs',
-    'shoes',
-    'boots',
-    'weapon',
-    'ammo',
-  ]);
+  
   const [previewAnimation, setPreviewAnimation] = useState("walk");
   const [charDirection, setCharDirection] = useState('back');
 

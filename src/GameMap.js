@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { roomInfo, roomSize } from './roomGenerator';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import generateMaze from 'generate-maze';

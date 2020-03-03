@@ -60,9 +60,7 @@ function GameMapServer() {
 
 function Cell(props) {
   const {
-    id,
-    title,
-    description,
+    // id, title, description,
     n_to,
     s_to,
     w_to,
