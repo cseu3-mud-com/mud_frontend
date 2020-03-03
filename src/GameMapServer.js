@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
+import axios from './useAxios';
 
 const mapSize = 14;
 const roomSize = 25;
@@ -35,7 +35,7 @@ function GameMapServer() {
       }
       return newMap;
     });
-    axios.get('https://lambda-mud-test.herokuapp.com/api/adv/rooms').then(res => {
+    axios().get('/api/adv/rooms').then(res => {
       setRooms(JSON.parse(res.data.rooms).map(room => ({
         ...room,
         id: room.pk,
