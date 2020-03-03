@@ -18,7 +18,7 @@ const Signup = props => {
       })
       .then(res => {
         // debugger
-        localStorage.setItem("token", res.data.payload);
+        localStorage.setItem("token", res.data.key);
         props.history.push("/gamemenu");
       });
   };
