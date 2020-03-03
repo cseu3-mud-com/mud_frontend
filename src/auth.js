@@ -4,9 +4,9 @@
 import axios from "axios";
 
 // Configs
-import { baseUrl } from "../config";
+import { baseUrl } from "./config";
 
-export const axiosWithAuth = () => {
+const axiosWithAuth = () => {
   const token = localStorage.getItem("token");
   return axios.create({
     headers: {
@@ -16,3 +16,5 @@ export const axiosWithAuth = () => {
     baseURL: baseUrl
   });
 };
+
+export default axiosWithAuth;
