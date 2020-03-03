@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import axios from 'axios';
 // import axios from './useAxios';
 
-const mapSize = 14;
+const mapSize = 36;
+const spaceBetweenRooms = 2;
 const roomSize = 25;
 const DrawMap = styled.div`
   max-width: calc(${mapSize} * ${roomSize}px);
@@ -53,7 +54,7 @@ function GameMapServer() {
         }
 
         const position = mapSize / 2;
-        drawInMap(newMap, position, position - 1, rooms[0].id);
+        drawInMap(newMap, position, position, rooms[0].id);
 
         return newMap;
       });
@@ -66,28 +67,28 @@ function GameMapServer() {
     if (currentRoom > 0) {
       if (!roomsInMap.includes(currentRoom)) {
         roomsInMap.push(currentRoom);
-        console.log('drawing:', currentRoom)
         map[x][y] = currentRoom;
         const findRoom = rooms.find(room => room.id === currentRoom);
+        //console.log('drawing:', currentRoom)
         // draw connection to the north if there is one
         if (findRoom.n_to > 0) {
-          console.log('drawing north of', currentRoom, 'which is', findRoom.n_to)
-          drawInMap(map, x - 1, y, findRoom.n_to)
+          //console.log('drawing north of', currentRoom, 'which is', findRoom.n_to)
+          drawInMap(map, x - spaceBetweenRooms, y, findRoom.n_to)
         }
         // draw connection to the south if there is one
         if (findRoom.s_to > 0) {
-          console.log('drawing south of', currentRoom, 'which is', findRoom.s_to)
-          drawInMap(map, x + 1, y, findRoom.s_to)
+          //console.log('drawing south of', currentRoom, 'which is', findRoom.s_to)
+          drawInMap(map, x + spaceBetweenRooms, y, findRoom.s_to)
         }
         // draw connection to the west if there is one
         if (findRoom.w_to > 0) {
-          console.log('drawing west of', currentRoom, 'which is', findRoom.w_to)
-          drawInMap(map, x, y - 1, findRoom.w_to)
+          //console.log('drawing west of', currentRoom, 'which is', findRoom.w_to)
+          drawInMap(map, x, y - spaceBetweenRooms, findRoom.w_to)
         }
         // draw connection to the east if there is one
         if (findRoom.e_to > 0) {
-          console.log('drawing east of', currentRoom, 'which is', findRoom.e_to)
-          drawInMap(map, x, y + 1, findRoom.e_to)
+          //console.log('drawing east of', currentRoom, 'which is', findRoom.e_to)
+          drawInMap(map, x, y + spaceBetweenRooms, findRoom.e_to)
         }
       }
     } else {
