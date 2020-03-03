@@ -15,6 +15,7 @@ function App() {
         <Route exact path="/" component={Landing} />
         <Route path="/signup" component={SignupForm} />
         <Route path="/login" component={LoginForm} />
+        <Route path="/gamemenu" component={GameMenu} />
         {/* <GameMenu /> */}
         {/* </Route> */}
         <Route path="/character">
