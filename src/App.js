@@ -7,6 +7,7 @@ import GameMapServer from './GameMapServer';
 import Landing from "./Landing";
 import SignupForm from "./SignupForm";
 import LoginForm from "./LoginForm";
+import PrivateRoute from "./usePrivateRoute";
 import {
   BrowserRouter as Router,
   Switch,
@@ -21,18 +22,10 @@ function App() {
         <Route exact path="/" component={Landing} />
         <Route path="/signup" component={SignupForm} />
         <Route path="/login" component={LoginForm} />
-        <Route path="/gamemenu" component={GameMenu} />
-        {/* <GameMenu /> */}
-        {/* </Route> */}
-        <Route path="/character">
-          <GameCharCreator />
-        </Route>
-        <Route path="/map">
-          <GameMap />
-        </Route>
-        <Route path="/mapServer">
-          <GameMapServer />
-        </Route>
+        <PrivateRoute path="/gamemenu" component={GameMenu} />
+        <PrivateRoute path="/character" component={GameCharCreator} />
+        <PrivateRoute path="/map" component={GameMap} />
+        <PrivateRoute path="/mapServer" component={GameMapServer} />
       </Switch>
     </Router>
   );
