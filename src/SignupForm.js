@@ -6,14 +6,13 @@ const Signup = props => {
   console.log(props, "lllllll");
   const signup = () => {
     alert(`User Created!
-					 Name: ${inputs.firstName} ${inputs.lastName}
+					 Username: ${inputs.username}
 					 Email: ${inputs.email}`);
 
     axios
-      .post("/signup", {
-        firstName: inputs.firstName,
-        lastName: inputs.lastName,
-        Email: inputs.email,
+      .post("https://mud-api-20.herokuapp.com/api/registration/", {
+        username: inputs.username,
+        email: inputs.email,
         password1: inputs.password1,
         password2: inputs.password2
       })
@@ -29,27 +28,18 @@ const Signup = props => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label>First Name</label>
+        <label>Username</label>
         <input
           type="text"
-          name="firstName"
+          name="username"
           onChange={handleInputChange}
-          value={inputs.firstName}
-          required
-        />
-        <br />
-        <label>Last Name</label>
-        <input
-          type="text"
-          name="lastName"
-          onChange={handleInputChange}
-          value={inputs.lastName}
+          value={inputs.username}
           required
         />
       </div>
       <br />
       <div>
-        <label>Email Address</label>
+        <label>Email</label>
         <input
           type="email"
           name="email"
