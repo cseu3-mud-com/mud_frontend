@@ -1,22 +1,17 @@
 import React from "react";
-import useForm from "./CustomHooks";
-import axiosWithAuth from "./auth";
+import useForm from "./useForm";
+import axios from "./useAxios";
+import { userTokenKey } from './config';
 
 const LoginForm = props => {
   const login = () => {
-    alert("Login Successful");
-
-    // axios
-    axiosWithAuth()
-      .post("https://mud-api-20.herokuapp.com/api/login/", {
+    axios()
+      .post("api/login/", {
         username: inputs.username,
-        email: inputs.email,
         password: inputs.password
       })
       .then(res => {
-        // debugger
-        // console.log(res, "lllllll");
-        localStorage.setItem("token", res.data.key);
+        localStorage.setItem(userTokenKey, res.data.key);
         props.history.push("/gamemenu");
       });
   };
@@ -31,16 +26,6 @@ const LoginForm = props => {
           name="username"
           onChange={handleInputChange}
           value={inputs.username}
-          required
-        />
-      </div>
-      <div>
-        <label>Email</label>
-        <input
-          type="email"
-          name="email"
-          onChange={handleInputChange}
-          value={inputs.email}
           required
         />
       </div>
