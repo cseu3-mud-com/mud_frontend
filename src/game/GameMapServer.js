@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
-// import axios from './useAxios';
+import axios from '../hooks/useAxios';
 
-const mapSize = 36;
+const mapSize = 42;
 const spaceBetweenRooms = 2;
 const roomSize = 25;
 const DrawMap = styled.div`
@@ -27,23 +26,18 @@ const DrawCell = styled.div`
 function GameMapServer() {
   const [gameMap, setMap] = useState([]);
   const [rooms, setRooms] = useState([]);
+  const [playerTravel, setPlayerTravel] = useState('');
 
   useEffect(() => {
-    // axios(true).get('/api/adv/rooms')
-    axios.get('https://lambda-mud-test.herokuapp.com/api/adv/rooms').then(res => {
-      const _rooms = JSON.parse(res.data.rooms).map(room => ({
-        ...room,
-        id: room.pk,
-        ...room.fields,
-        fields: null,
-        pk: null
-      }));
-      setRooms(_rooms);
-    })
+    if (rooms.length <= 0) {
+      axios(true).get('api/adv/rooms/').then(res => {
+        setRooms(res.data.rooms);
+      })
+    }
   }, []);
 
   useEffect(() => {
-    if (rooms.length > 0) {
+    if (rooms.length > 0 && gameMap.length === 0) {
       setMap(map => {
         const newMap = [];
         for (let i = 0; i < mapSize; i++) {
@@ -59,8 +53,17 @@ function GameMapServer() {
         return newMap;
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rooms])
+
+  useEffect(() => {
+    if (playerTravel !== '') {
+      axios(true).post('api/adv/move/', { direction: playerTravel }).then(res => {
+        console.log(res.data);
+        // setPlayerTravel('')
+      })
+    }
+  }, [playerTravel])
 
   const roomsInMap = []
   const drawInMap = (map, x, y, currentRoom) => {
@@ -96,19 +99,32 @@ function GameMapServer() {
     }
   }
 
+  const changePlayerDirection = (e) => {
+    const { value } = e.target;
+    setPlayerTravel(value)
+  }
+
   if (gameMap.length > 0 && rooms.length > 0) {
     console.log(gameMap);
     console.log(rooms);
 
-    return <DrawMap>
-      {
-        gameMap.map(
-          row => row.map(
-            (cell, i) => <Cell key={`${row}-${i}`} room={cell} />
+    return <>
+      <DrawMap>
+        {
+          gameMap.map(
+            row => row.map(
+              (cell, i) => <Cell key={`${row}-${i}`} room={cell} />
+            )
           )
-        )
-      }
-    </DrawMap>
+        }
+      </DrawMap>
+      <div className="movePlayer">
+        <button onClick={changePlayerDirection} value="n">N</button>
+        <button onClick={changePlayerDirection} value="w">W</button>
+        <button onClick={changePlayerDirection} value="s">S</button>
+        <button onClick={changePlayerDirection} value="e">E</button>
+      </div>
+    </>
   }
   return <h1>Loading...</h1>
 }

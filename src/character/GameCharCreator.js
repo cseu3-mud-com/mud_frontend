@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import useDebounce from './useDebounce';
-
+import useDebounce from '../hooks/useDebounce';
 
 const Canvas = styled.canvas`
   border: 1px solid #000;

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { baseUrl, userTokenKey } from "./config";
+import { baseUrl, userTokenKey } from "../config";
 
 export default (useAuth = true) => {
   const options = {
@@ -11,9 +11,7 @@ export default (useAuth = true) => {
   
   if (useAuth) {
     const userToken = localStorage.getItem(userTokenKey);
-    options.headers = {
-      "Authorization": `${userToken}`
-    }
+    options.headers["Authorization"] = `Token ${userToken}`
   }
 
   return axios.create(options)

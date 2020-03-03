@@ -1,13 +1,13 @@
 import React from 'react';
 import './App.css';
-import GameCharCreator from './GameCharCreator';
-import GameMenu from './GameMenu';
-import GameMap from './GameMap';
-import GameMapServer from './GameMapServer';
-import Landing from "./Landing";
-import SignupForm from "./SignupForm";
-import LoginForm from "./LoginForm";
-import PrivateRoute from "./usePrivateRoute";
+import GameCharCreator from './character/GameCharCreator';
+import GameMenu from './game/GameMenu';
+import GameMap from './game/GameMap';
+import GameMapServer from './game/GameMapServer';
+import Landing from "./auth/Landing";
+import SignupForm from "./auth/SignupForm";
+import LoginForm from "./auth/LoginForm";
+import PrivateRoute from "./hooks/usePrivateRoute";
 import {
   BrowserRouter as Router,
   Switch,

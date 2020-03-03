@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import { userTokenKey } from './config';
+import { userTokenKey } from '../config';
 
 export default ({ component: Component, ...rest }) => (
 	<Route

@@ -1,7 +1,7 @@
 import React from "react";
-import useForm from "./useForm";
-import axios from "./useAxios";
-import { userTokenKey } from './config';
+import useForm from "../hooks/useForm";
+import axios from "../hooks/useAxios";
+import { userTokenKey } from '../config';
 
 const LoginForm = props => {
   const login = () => {
