@@ -1,7 +1,7 @@
 import React from "react";
 import LoginForm from './LoginForm';
 import Signup from "./SignupForm";
-
+import Message from '../game/Message'
 export default function Landing(props) {
   return (
     <>
@@ -9,6 +9,7 @@ export default function Landing(props) {
       <LoginForm history={props.history} />
       <h1>Create an Account</h1>
       <Signup history={props.history} />
+      <Message />
     </>
   );
 }
