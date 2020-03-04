@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 const Page = styled.section`
   width: 1024px;
@@ -12,7 +13,6 @@ const Page = styled.section`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 10px rgba(255,255,255, .25);
 `;
 
 const BGImg = styled.div`
@@ -27,7 +27,7 @@ const BGImg = styled.div`
   left: 0;
 `
 
-const BGOverlay = styled.div`
+const OverlayContent = styled.div`
   display: block;
   position: absolute;
   z-index: 2;
@@ -35,12 +35,41 @@ const BGOverlay = styled.div`
   left: 50px;
   width: 33%;
   transform: translateY(-50%);
+  &.alignRight {
+    left: auto;
+    right: 100px;
+  }
+  &.map {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    top: auto;
+    left: auto;
+    padding: 2rem;
+    transform: translateY(0);
+    
+  }
 `
 
 const Title = styled.h1`
   display: block;
   font-size: 3rem;
   padding-bottom: 2rem;
+  text-shadow: 1px 2px 0px black;
+  &.medium {
+    font-size: 2rem;
+  }
+  &.small {
+    font-size: 1.5rem;
+    padding-bottom: 1rem;
+  }
+`
+
+const Description = styled.p`
+  display: block;
+  font-size: 1rem;
+  line-height: 1.25rem;
+  text-shadow: 1px 2px 0px black;
 `
 
 const Button = styled.button`
@@ -54,7 +83,7 @@ const Button = styled.button`
   border: 1px solid transparent;
   border-left-color: white;
   border-bottom-color: white;
-  transition: all .33s ease-in-out;
+  transition: all .2s ease-in-out;
   &.alignRight {
     margin-left: auto;
   }
@@ -64,23 +93,115 @@ const Button = styled.button`
     border-top-color: white;
     border-right-color: white;
   }
-
 `
 
+const Menu = styled(Link)`
+  display: block;
+  cursor: pointer;
+  color: inherit;
+  font-family: ${props => props.theme.fonts.secondary};
+  background: transparent;
+  border: 0;
+  font-size: 3.6rem;
+  text-align: center;
+  margin: 0 0 3rem;
+  text-shadow: 0 0 0 transparent;
+  transition: all .2s ease-in-out;
+  &:hover {
+    text-shadow: 1rem 1rem 0 rgba(255, 255, 255, .1);
+  }
+`
+
+const PlayerControls = styled.div`
+  position: absolute;
+  bottom: 0;
+  width: calc(100% - 4rem);
+`
+
+const Chat = styled.div`
+  display: block;
+  width: 100%;
+  height: 170px;
+  overflow-y: auto;
+  margin-bottom: 2rem;
+  p {
+    line-height: 1.5rem
+  }
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, .75);
+  }
+ 
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(63, 69, 124, 1);
+    outline: 1px solid slategrey;
+  }
+`;
+
+const PlayerMovement = styled.div`
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 3rem auto;
+`;
+
+const MoveBtn = styled.button`
+  display: block;
+  cursor: pointer;
+  width: calc(100% / 3);
+  height: calc(100% / 3);
+  position: absolute;
+  background: rgba(63, 69, 124, 1);
+  color: white;
+  font-size: 1em;
+  &.north, &.south {
+    left: calc(100% / 3);
+  }
+  &.west, &.east {
+    top: calc(100% / 3);
+  }
+  &.north {
+    top: 0;
+  }
+  &.west {
+    left: 0;
+  }
+  &.east {
+    right: 0;
+  }
+  &.south {
+    bottom: 0;
+  }
+`;
+
+
 function BackgroundImage(props) {
-  return <BGImg style={{ backgroundImage: `url("${props.src}")` }}></BGImg>
+  return <BGImg style={{ backgroundImage: `url("${props.src}")` }}>{
+    props.gradient ? <BGImg style={{ background: `linear-gradient(135deg, rgba(63, 69, 124, .75) 0%, rgba(0, 0, 0, 0) 80%)` }} /> : null
+  }</BGImg>
 }
 
-function OverlayContent(props) {
-  return <BGOverlay>{props.children}</BGOverlay>
+function ChatAutoScrollDown(props) {
+  useEffect(() => {
+    const chatroom = document.getElementById("chatroom");
+    chatroom.scrollTop = chatroom.scrollHeight;
+  }, [])
+  return <Chat id="chatroom">{props.children}</Chat>
 }
 
 export default {
   Page,
   Title,
+  Description,
   Button,
+  MoveBtn,
+  PlayerMovement,
+  PlayerControls,
+  Menu,
+  Chat: ChatAutoScrollDown,
   BGImg,
-  BGOverlay,
-  BackgroundImage,
   OverlayContent,
+  BackgroundImage,
 }

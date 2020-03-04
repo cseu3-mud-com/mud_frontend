@@ -82,6 +82,16 @@ a {
       flex-basis: calc(100% / 2);
     }
   }
+  &.twoWide {
+    & > .column:first-child {
+      max-width: 60%;      
+      flex-basis: 60%;
+    }
+    & > .column:last-child {
+      max-width: 40%;      
+      flex-basis: 40%;
+    }
+  }
   &.three {
     & > .column {
       max-width: calc(100% / 3);      
