@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import Pusher from 'pusher-js';
 import Styl from "../styledComponents";
 import axios from '../hooks/useAxios';
 import useRooms from '../context/rooms';
 import useInit from '../context/init';
+
 
 const mapSize = 15;
 const roomSize = 25;
@@ -81,6 +83,26 @@ function GameMap(props) {
       })
     }
   }, [playerTravel])
+
+  function Message() {
+  
+    const [message, setMessage] = useState('')
+  
+    useEffect(() => {
+      const pusher = new Pusher('6c3071d610bd137e36cd', {
+        cluster: 'us3',
+        encrypted: true
+      });
+      const channel = pusher.subscribe('p-channel-c76cb378-9bd0-4614-a632-6be5c51c7276');
+      channel.bind('broadcast', data => {
+        console.log('data', data)
+        setMessage(data.message);
+      });
+    })
+    return (
+      <div>{message}</div>
+    )
+  }
 
   const changePlayerDirection = (e) => {
     const { value } = e.target;
