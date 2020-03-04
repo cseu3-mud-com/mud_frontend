@@ -28,6 +28,8 @@ const LoginForm = props => {
           <input
             type="text"
             name="username"
+            autoComplete="current-username"
+            autoFocus={true}
             onChange={handleInputChange}
             value={inputs.username}
             required
@@ -38,8 +40,10 @@ const LoginForm = props => {
           <input
             type="password"
             name="password"
+            autoComplete="current-password"
             onChange={handleInputChange}
             value={inputs.password}
+            required
           />
         </div>
         <div className="flex two">
@@ -47,7 +51,7 @@ const LoginForm = props => {
             <Styl.Button type="submit">Login</Styl.Button>
           </div>
           <div className="column">
-            <Link to="/register"><Styl.Button type="button">Sign up</Styl.Button></Link>
+            <Link to="/register"><Styl.Button type="button" className="alignRight">Sign up</Styl.Button></Link>
           </div>
         </div>
       </form>

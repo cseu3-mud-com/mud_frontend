@@ -72,4 +72,49 @@ a {
   color: inherit;
 }
 
+.flex {
+  display: flex;
+  flex: 1 1 wrap;
+  justify-content: space-between;
+  &.two {
+    & > .column {
+      max-width: calc(100% / 2);      
+      flex-basis: calc(100% / 2);
+    }
+  }
+  &.three {
+    & > .column {
+      max-width: calc(100% / 3);      
+      flex-basis: calc(100% / 3);
+    }
+  }
+}
+
+label, input {
+  display: block;
+  width: 100%;
+  font-size: 1.5rem;
+}
+
+label {
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
+  line-height: 1.6rem;
+  color: rgba(255, 255, 255, .75);
+}
+
+input {
+  outline: 0;
+  color: white;
+  font-family: inherit;
+  line-height: 3rem;
+  padding: 0 .8rem;
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid transparent;
+  transition: all .33s ease-in-out;
+  &:focus {
+    border-color: white;
+  }
+}
+
 `;

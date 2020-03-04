@@ -33,7 +33,7 @@ const BGOverlay = styled.div`
   z-index: 2;
   top: 50%;
   left: 50px;
-  max-width: 50%;
+  width: 33%;
   transform: translateY(-50%);
 `
 
@@ -45,8 +45,26 @@ const Title = styled.h1`
 
 const Button = styled.button`
   display: block;
+  cursor: pointer;
   font-size: 1.5rem;
-  padding: 1rem;
+  padding: .75rem 1rem;
+  margin-top: 2rem;
+  background: transparent;
+  color: white;
+  border: 1px solid transparent;
+  border-left-color: white;
+  border-bottom-color: white;
+  transition: all .33s ease-in-out;
+  &.alignRight {
+    margin-left: auto;
+  }
+  &:hover {
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+    border-top-color: white;
+    border-right-color: white;
+  }
+
 `
 
 function BackgroundImage(props) {
