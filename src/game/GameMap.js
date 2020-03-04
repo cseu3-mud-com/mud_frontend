@@ -33,11 +33,16 @@ const DrawCell = styled.div`
   }
 `;
 
+const pusher = new Pusher(pusherKey, {
+  cluster: 'us3',
+  encrypted: true
+});
+
 function GameMap(props) {
   const [initState, initActions] = useInit();
   const [roomState, roomActions] = useRooms();
   const [playerTravel, setPlayerTravel] = useState('');
-  const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState([]);
   const { gameMap, rooms } = roomState;
 
   // allow player movement with keyboard arrows
@@ -66,21 +71,22 @@ function GameMap(props) {
         document.removeEventListener('keydown')
       }
     })
-  });
+  }, []);
   // initialize player data
   useEffect(() => {
+    let channel;
     if (!initState.init.uuid) {
       initActions.getInit();
     } else {
-      const pusher = new Pusher(pusherKey, {
-        cluster: 'us3',
-        encrypted: true
-      });
-      const channel = pusher.subscribe(`p-channel-${initState.init.uuid}`);
+      channel = pusher.subscribe(`p-channel-${initState.init.uuid}`);
       channel.bind('broadcast', data => {
         console.log('broadcast data', data)
-        setMessage(data.message);
+        setMessages(messages => [...messages, ...data.message.split('\n')]);
       });
+    }
+    return () => {
+      if (channel)
+        channel.unbind('broadcast')
     }
   }, [initState, initActions]);
   // get the map with all rooms
@@ -96,17 +102,22 @@ function GameMap(props) {
         setPlayerTravel('');
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerTravel])
+
+  useEffect(() => {
+    const chatroom = document.getElementById("chatroom");
+    if (chatroom)
+      chatroom.scrollTop = chatroom.scrollHeight;
+  }, [messages])
 
   const changePlayerDirection = (e) => {
     const { value } = e.target;
     setPlayerTravel(value)
   }
 
+
   if (gameMap.length > 0 && rooms.length > 0 && initState.init.uuid) {
-    // console.log('gameMap', gameMap);
-    // console.log('rooms', rooms);
-    // console.log('initState', initState.init)
     return <>
       <Styl.BackgroundImage src="backgrounds/3.jpg" gradient={true} />
       <Styl.OverlayContent className="map">
@@ -130,8 +141,8 @@ function GameMap(props) {
         <Styl.PlayerControls className="flex twoWide">
           <div className="column">
             <Styl.Title className="small">Room Chat</Styl.Title>
-            <Styl.Chat>
-              {message}
+            <Styl.Chat id="chatroom">
+              {messages.map(message => <p>{message}</p>)}
             </Styl.Chat>
           </div>
           <div className="column">
