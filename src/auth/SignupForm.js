@@ -16,7 +16,7 @@ const Signup = props => {
       })
       .then(res => {
         localStorage.setItem(userTokenKey, res.data.key);
-        props.history.push("/gamemenu");
+        props.history.push("/menu");
       }).catch(error => {
         console.error(error);
       });
