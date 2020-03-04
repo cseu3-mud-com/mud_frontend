@@ -1,108 +1,100 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import axios from '../hooks/useAxios';
+import useRooms from '../context/rooms';
+import useInit from '../context/init';
 
-import generateMaze from 'generate-maze';
-
-const mazeSize = 14;
+const mapSize = 15;
+const roomSize = 25;
 const DrawMap = styled.div`
+  max-width: calc(${mapSize} * ${roomSize}px);
   line-height: 0;
-  max-width: calc(${mazeSize} * 50px);
-  border: 1px solid #000;
-  padding: 1px;
 `;
 
-const DrawRoom = styled.div`
+const DrawCell = styled.div`
   display: inline-block;
-  width: 50px;
-  height: 50px;
-  line-height: 48px;
+  vertical-align: top;
+  width: ${roomSize}px;
+  height: ${roomSize}px;
+  background-color: #eee;
+  line-height: ${roomSize}px;
   text-align: center;
-  color: white;
-  position: relative;
-  font-family: 'Arial';
-  &.top {
-    margin-top: -1px;
-    border-top: 1px solid white;
+  &.room {
+    background-color: #bbb;
   }
-  &.bottom {
-    margin-bottom: -1px;
-    border-bottom: 1px solid white;
+  &.player {
+    background-color: red;
   }
-  &.left {
-    margin-left: -1px;
-    border-left: 1px solid white;
-  }
-  &.right {
-    margin-right: -1px;
-    border-right: 1px solid white;
-  }
-  &.left.right {
-    margin-left: -1px;
-    margin-right: -1px;
-  }
-  &.top.bottom {
-    margin-top: -1px;
-    margin-bottom: -1px;
-  }
-`
-const InfoRoom = styled.div`
-  display: block;
-  font-family: 'Arial';
-  font-size: 16px;
-  line-height: 26px;
-  max-width: 1000px;
-  margin: 0 auto;
-`
+`;
 
-function GameMap() {
-  const maze = generateMaze(mazeSize);
-  const [colors, setColors] = useState([])
-  console.log(maze);
+function GameMapServer(props) {
+  const [initState, initActions] = useInit();
+  const [roomState, roomActions] = useRooms();
+  const [playerTravel, setPlayerTravel] = useState('');
+  const { gameMap, rooms } = roomState;
 
-  if (maze.length > 0) {
-    return <DrawMap>
-      {
-        maze.map(
-          (row, r) =>
-            row.map(
-              (cell, c) =>
-                <Room
-                  key={`${r}-${c}`}
-                  draw
-                  {...cell}
-                  colors={colors}
-                  setColors={setColors}
-                />
-            )
-        )
-      }
-    </DrawMap>
-  } else {
-    return <p>Loading...</p>
-  }
-}
+  useEffect(() => {
+    if (!initState.init.uuid) initActions.getInit();
+  }, [initState, initActions]);
 
-function Room(props) {
-  if (props.draw) {
-    const { x, y, top, bottom, left, right, set, colors, setColors } = props
-    if (!colors[set]) {
-      setColors(_c => {
-        _c[set] = `rgba(${set * Math.random()* 10},${set * Math.random()* 10},${set * Math.random()* 10},1)`;
-        return _c
-      });
+  useEffect(() => {
+    if (!roomState.rooms.length > 0) roomActions.getRooms();
+  }, [roomState, roomActions]);
+  
+  useEffect(() => {
+    if (playerTravel !== '') {
+      console.log('playerTravel', playerTravel)
+      axios(true).post('api/adv/move/', { direction: playerTravel }).then(res => {
+        initActions.setRoom(res.data);
+        setPlayerTravel('');
+      })
     }
-    return <DrawRoom className={`room 
-    room_${x}_${y}
-    ${top === true ? 'top' : ''}
-    ${bottom === true ? 'bottom' : ''}
-    ${left === true ? 'left' : ''}
-    ${right === true ? 'right' : ''}`
-    } style={{ backgroundColor: colors[set] }}>{`${set}`}</DrawRoom>
-  } else {
-    return <InfoRoom>
-      <p></p>
-    </InfoRoom>
+  }, [playerTravel])
+
+  const changePlayerDirection = (e) => {
+    const { value } = e.target;
+    setPlayerTravel(value)
   }
+  
+  if (gameMap.length > 0 && rooms.length > 0) {
+    // console.log('gameMap', gameMap);
+    // console.log('rooms', rooms);
+    console.log(initState.init.room.title)
+    console.log(initState.init.room.description)
+    return <>
+      <DrawMap>
+        {
+          gameMap.map(
+            row => row.map(
+              (cell, i) => <Cell key={`${row}-${i}`} room={cell} isPlayerRoom={cell === initState.init.room.id} />
+            )
+          )
+        }
+      </DrawMap>
+      <div className="movePlayer">
+        <button onClick={changePlayerDirection} value="n">N</button>
+        <button onClick={changePlayerDirection} value="w">W</button>
+        <button onClick={changePlayerDirection} value="s">S</button>
+        <button onClick={changePlayerDirection} value="e">E</button>
+      </div>
+    </>
+  }
+  return <h1>Loading...</h1>
 }
 
-export default GameMap;
+function Cell(props) {
+  const {
+    room,
+    isPlayerRoom
+  } = props;
+  const classes = ['cell']
+  if (room > 0) {
+    classes.push('room')
+  }
+  if (isPlayerRoom) {
+    classes.push('player')
+  }
+  return <DrawCell className={classes}>{room > 0 ? room : ''}</DrawCell>
+}
+
+export default GameMapServer;
