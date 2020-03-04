@@ -1,15 +1,12 @@
 import React from 'react';
-import GameCharCreator from './character/GameCharCreator';
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import GameMenu from './game/GameMenu';
-import GameMapServer from './game/GameMapServer';
+import GameMap from './game/GameMap';
+import GameCharCreator from './character/GameCharCreator';
 import SignupForm from "./auth/SignupForm";
 import LoginForm from "./auth/LoginForm";
+import Logout from './auth/Logout';
 import PrivateRoute from "./hooks/usePrivateRoute";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route
-} from "react-router-dom";
 
 import { ThemeProvider } from 'styled-components';
 import GlobalStyles from './globalStyles';
@@ -36,8 +33,9 @@ function App() {
             <Route exact path="/" component={LoginForm} />
             <Route path="/login" component={LoginForm} />
             <Route path="/register" component={SignupForm} />
+            <Route path="/logout" component={Logout} />
             <PrivateRoute path="/menu" component={GameMenu} />
-            <PrivateRoute path="/map" component={GameMapServer} />
+            <PrivateRoute path="/map" component={GameMap} />
             <PrivateRoute path="/character" component={GameCharCreator} />
           </Switch>
         </Router>
