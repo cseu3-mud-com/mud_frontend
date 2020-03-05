@@ -119,11 +119,11 @@ function GameMap(props) {
 
   useEffect(() => {
     if (myMessage !== '') {
-      //axios(true).post('api/adv/say/', { message: myMessage }).then(res => {
+      axios(true).post('api/adv/say/', { message: myMessage }).then(res => {
         setMessages(messages => [...messages, `You said: ${myMessage}`]);
         setMyMessage('');
         setSendChat(false);
-      //});
+      });
     }
   }, [sendChat])
 
