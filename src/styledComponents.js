@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import React from "react";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 const Page = styled.section`
   width: 1024px;
@@ -25,7 +25,7 @@ const BGImg = styled.div`
   z-index: 1;
   top: 0;
   left: 0;
-`
+`;
 
 const OverlayContent = styled.div`
   display: block;
@@ -47,13 +47,14 @@ const OverlayContent = styled.div`
     left: auto;
     padding: 2rem;
     transform: translateY(0);
-    
   }
-`
+`;
 
 const Title = styled.h1`
-  display: block;
+  /* display: block; */
+  display: flex;
   font-size: 3rem;
+  justify-content: space-between;
   padding-bottom: 2rem;
   text-shadow: 1px 2px 0px black;
   &.medium {
@@ -63,27 +64,27 @@ const Title = styled.h1`
     font-size: 1.5rem;
     padding-bottom: 1rem;
   }
-`
+`;
 
 const Description = styled.p`
   display: block;
   font-size: 1rem;
   line-height: 1.25rem;
   text-shadow: 1px 2px 0px black;
-`
+`;
 
 const Button = styled.button`
   display: block;
   cursor: pointer;
   font-size: 1.5rem;
-  padding: .75rem 1rem;
+  padding: 0.75rem 1rem;
   margin-top: 2rem;
   background: transparent;
   color: white;
   border: 1px solid transparent;
   border-left-color: white;
   border-bottom-color: white;
-  transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
   &.alignRight {
     margin-left: auto;
   }
@@ -93,7 +94,7 @@ const Button = styled.button`
     border-top-color: white;
     border-right-color: white;
   }
-`
+`;
 
 const Menu = styled(Link)`
   display: block;
@@ -106,17 +107,28 @@ const Menu = styled(Link)`
   text-align: center;
   margin: 0 0 3rem;
   text-shadow: 0 0 0 transparent;
-  transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
   &:hover {
-    text-shadow: 1rem 1rem 0 rgba(255, 255, 255, .1);
+    text-shadow: 1rem 1rem 0 rgba(255, 255, 255, 0.1);
   }
-`
+`;
+const Menu2 = styled(Link)`
+  cursor: pointer;
+  color: inherit;
+  font-family: ${props => props.theme.fonts.secondary};
+  background: transparent;
+  text-shadow: 0 0 0 transparent;
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    text-shadow: 1rem 1rem 0 rgba(255, 255, 255, 0.1);
+  }
+`;
 
 const PlayerControls = styled.div`
   position: absolute;
   bottom: 0;
   width: calc(100% - 4rem);
-`
+`;
 
 const Chat = styled.div`
   display: block;
@@ -124,15 +136,15 @@ const Chat = styled.div`
   height: 170px;
   overflow-y: auto;
   p {
-    line-height: 1.5rem
+    line-height: 1.5rem;
   }
   &::-webkit-scrollbar {
     width: 8px;
   }
   &::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, .75);
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.75);
   }
- 
+
   &::-webkit-scrollbar-thumb {
     background-color: rgba(63, 69, 124, 1);
     outline: 1px solid slategrey;
@@ -155,10 +167,12 @@ const MoveBtn = styled.button`
   background: rgba(63, 69, 124, 1);
   color: white;
   font-size: 1em;
-  &.north, &.south {
+  &.north,
+  &.south {
     left: calc(100% / 3);
   }
-  &.west, &.east {
+  &.west,
+  &.east {
     top: calc(100% / 3);
   }
   &.north {
@@ -175,11 +189,18 @@ const MoveBtn = styled.button`
   }
 `;
 
-
 function BackgroundImage(props) {
-  return <BGImg style={{ backgroundImage: `url("${props.src}")` }}>{
-    props.gradient ? <BGImg style={{ background: `linear-gradient(135deg, rgba(63, 69, 124, .75) 0%, rgba(0, 0, 0, 0) 80%)` }} /> : null
-  }</BGImg>
+  return (
+    <BGImg style={{ backgroundImage: `url("${props.src}")` }}>
+      {props.gradient ? (
+        <BGImg
+          style={{
+            background: `linear-gradient(135deg, rgba(63, 69, 124, .75) 0%, rgba(0, 0, 0, 0) 80%)`
+          }}
+        />
+      ) : null}
+    </BGImg>
+  );
 }
 
 export default {
@@ -191,8 +212,9 @@ export default {
   PlayerMovement,
   PlayerControls,
   Menu,
+  Menu2,
   Chat,
   BGImg,
   OverlayContent,
-  BackgroundImage,
-}
+  BackgroundImage
+};
