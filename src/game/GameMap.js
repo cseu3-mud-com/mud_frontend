@@ -146,6 +146,7 @@ function GameMap(props) {
         <Styl.OverlayContent className="map">
           <Styl.Title className="medium">
             {initState.init.room.title}
+            <Styl.Menu2 to="/logout">Exit</Styl.Menu2>
           </Styl.Title>
           <div className="flex twoWide">
             <div className="column">
