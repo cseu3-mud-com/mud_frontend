@@ -125,6 +125,7 @@ function GameMap(props) {
         setSendChat(false);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sendChat])
 
   const changePlayerDirection = (e) => {
@@ -166,7 +167,7 @@ function GameMap(props) {
             <Styl.Chat id="chatroom">
               {messages.map((message, i) => <p key={i}>{message}</p>)}
             </Styl.Chat>
-            <input type="text" value={myMessage} onChange={changeMyMessage} />
+            <input type="text" value={myMessage} onChange={changeMyMessage} placeholder="Say something..." className="chatInput" />
           </div>
           <div className="column">
             <Styl.PlayerMovement>
