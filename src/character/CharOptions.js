@@ -9146,10 +9146,6 @@ export default {
     }
   },
   "hats": {
-    "no_hat": {
-      "title": "No Hat",
-      "sprites": {}
-    },
     "plate": {
       "title": "Plate",
       "plate_1": {
