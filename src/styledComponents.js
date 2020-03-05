@@ -123,7 +123,6 @@ const Chat = styled.div`
   width: 100%;
   height: 170px;
   overflow-y: auto;
-  margin-bottom: 2rem;
   p {
     line-height: 1.5rem
   }

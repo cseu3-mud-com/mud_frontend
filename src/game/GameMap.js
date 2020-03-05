@@ -43,14 +43,17 @@ function GameMap(props) {
   const [roomState, roomActions] = useRooms();
   const [playerTravel, setPlayerTravel] = useState('');
   const [messages, setMessages] = useState([]);
+  const [myMessage, setMyMessage] = useState('');
+  const [sendChat, setSendChat] = useState(false);
   const { gameMap, rooms } = roomState;
 
   // allow player movement with keyboard arrows
   useEffect(() => {
     document.addEventListener('keydown', function (e) {
       const key = e.which;
-      if ([37, 38, 39, 40].includes(key)) e.preventDefault();
+      if ([37, 38, 39, 40, 13].includes(key)) e.preventDefault();
       else return;
+      console.log('allowed key:', key);
       switch (key) {
         case 37:
           setPlayerTravel('w');
@@ -63,6 +66,9 @@ function GameMap(props) {
           break;
         case 40:
           setPlayerTravel('s');
+          break;
+        case 13:
+          setSendChat(true);
           break;
         default:
           break;
@@ -111,9 +117,25 @@ function GameMap(props) {
       chatroom.scrollTop = chatroom.scrollHeight;
   }, [messages])
 
+  useEffect(() => {
+    if (myMessage !== '') {
+      //axios(true).post('api/adv/say/', { message: myMessage }).then(res => {
+        setMessages(messages => [...messages, `You said: ${myMessage}`]);
+        setMyMessage('');
+        setSendChat(false);
+      //});
+    }
+  }, [sendChat])
+
   const changePlayerDirection = (e) => {
     const { value } = e.target;
     setPlayerTravel(value)
+  }
+
+  const changeMyMessage = (e) => {
+    const { value } = e.target;
+    console.log('my message:', value);
+    setMyMessage(value)
   }
 
 
@@ -142,8 +164,9 @@ function GameMap(props) {
           <div className="column">
             <Styl.Title className="small">Room Chat</Styl.Title>
             <Styl.Chat id="chatroom">
-              {messages.map(message => <p>{message}</p>)}
+              {messages.map((message, i) => <p key={i}>{message}</p>)}
             </Styl.Chat>
+            <input type="text" value={myMessage} onChange={changeMyMessage} />
           </div>
           <div className="column">
             <Styl.PlayerMovement>
