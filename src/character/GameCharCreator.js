@@ -198,6 +198,7 @@ function GameCharCreator() {
     let filenameKey = filename.replace(/[\\/.]/gi, '');
     let sprite = sprites[filenameKey] ? sprites[filenameKey] : null;
     if (!sprite) {
+      console.log('loaded', filename)
       return await loadImage(filename)
     }
     return sprite;
@@ -212,9 +213,10 @@ function GameCharCreator() {
   }
   const getCharHairSprite = () => {
     const getCharGender = customization['sex'].types[charGender]
+    const getCharHairType = customization['hair'].types[charHairType]
     const getHairColor = customization['hair'].colors[charHairType][charHairColor]
     const hairSprite = customization['hair'].sprites;
-    return `${hairSprite.replace('{sex}', getCharGender).replace('{type}', charHairType).replace('{color}', getHairColor)}`
+    return `${hairSprite.replace('{sex}', getCharGender).replace('{type}', getCharHairType).replace('{color}', getHairColor)}`
   }
 
   const drawPreview = async () => {
@@ -226,7 +228,7 @@ function GameCharCreator() {
 
     const { zoom, frames, rowStart } = getCurrSpriteInfo();
     // console.log(previewAnimation, currFrame, rowStart, rows.length)
-    const layers = [bodySprite]
+    const layers = [bodySprite, hairSprite]
     ctx.clearRect(0, 0, zoom, zoom * 1.2);
     ctx.beginPath();
     ctx.fillStyle = 'white';
@@ -259,6 +261,7 @@ function GameCharCreator() {
     }
   }
 
+  // add keyboard functionality to arrows
   useEffect(() => {
     document.addEventListener('keydown', function (e) {
       const key = e.which;
@@ -287,11 +290,32 @@ function GameCharCreator() {
     }
   }, []);
 
+  // canvas draw
   useEffect(() => {
     // console.log('drawing', animFrame, previewAnimation)
     drawPreview()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animFrame, charDirection, previewAnimation]);
+
+  // update auto generated fields value
+  useEffect(() => {
+    console.log('what')
+    setFormFieldsData([
+      charDirection,
+      charBodyType,
+      charBodyColor,
+      charGender,
+      charHairType,
+      charHairColor
+    ]);
+  }, [
+    charDirection,
+    charBodyType,
+    charBodyColor,
+    charGender,
+    charHairType,
+    charHairColor
+  ]);
 
   const previewOnChange = (e) => {
     let newAnim = e.target.value;
@@ -304,8 +328,8 @@ function GameCharCreator() {
   }
 
   const zoomOnChange = (e) => {
-    const newZoom = e.target.value;
-    setZoomScale(newZoom);
+    const { value } = e.target.value;
+    setZoomScale(value);
   }
 
   const formOnChange = [
@@ -330,14 +354,14 @@ function GameCharCreator() {
     'hairType',
     'hairColor'
   ];
-  const formFieldsData = [
+  const [formFieldsData, setFormFieldsData] = useState([
     charDirection,
     charBodyType,
     charBodyColor,
     charGender,
     charHairType,
     charHairColor
-  ];
+  ]);
   const [formFieldsDataOptions, setFormFieldsDataOptions] = useState([
     customization['direction'].types,
     customization['body'].types,
@@ -346,8 +370,7 @@ function GameCharCreator() {
     customization['hair'].types,
     customization['hair'].colors[charHairType]
   ]);
-
-  const createCharFields = () => {
+  const createCharSelectFields = () => {
     const fieldOnChange = (setState) => e => {
       const { value } = e.target;
       setState(value);
@@ -391,7 +414,7 @@ function GameCharCreator() {
           <input type="number" value={zoomScale} onChange={zoomOnChange} />
         <br />
         <br />
-        {createCharFields()}
+        {createCharSelectFields()}
       </div>
       <div className="column">
         <Canvas id="characterPreview" ref={canvasRef} width={getScale()} height={getScale() * 1.2}></Canvas>
