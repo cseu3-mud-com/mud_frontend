@@ -42,7 +42,7 @@ function GameCharCreator() {
         'No Hat', 'plate', 'horned'
       ],
       colors: [
-        ['Selected a hat first!'],
+        ['Select a hat first!'],
         // plate
         ['2', '3', '4', '5', '6', '7'],
         // horned
@@ -51,8 +51,15 @@ function GameCharCreator() {
       sprites: 'head/{type}/{color}.png'
     },
     'jacket': {
-      types: [],
-      sprites: []
+      types: [
+        'No Jacket', 'tabard', 'formal'
+      ],
+      colors: [
+        ['Select a jacket first!'],
+        ['default', 'black', 'blue', 'green', 'purple', 'red', 'yellow'],
+        ['vest', 'vest-stripes', 'vest-green', 'vest-green-stripes', 'iverness', 'jacket-black', 'jacket-brown', 'jacket-brown-stripes', 'jacket-tan', 'trenchcoat-dark', 'trenchcoat-grey'],
+      ],
+      sprites: 'torso/{sex}/chain/{type}/{color}.png'
     },
     'clothes': {
       types: [],
@@ -105,6 +112,8 @@ function GameCharCreator() {
   const [charHairColor, setCharHairColor] = useState(0);
   const [charHatType, setCharHatType] = useState(0);
   const [charHatColor, setCharHatColor] = useState(0);
+  const [charJacketType, setCharJacketType] = useState(0);
+  const [charJacketColor, setCharJacketColor] = useState(0);
 
   const spriteAnimations = {
     'stop': {
@@ -244,17 +253,27 @@ function GameCharCreator() {
     return `${hairSprite.replace('{type}', getCharHatType).replace('{color}', getHatColor)}`
   }
 
+  const getCharJacketSprite = () => {
+    if (charJacketType === 0) return null;
+    const getCharGender = customization['sex'].types[charGender]
+    const getCharJacketType = customization['jacket'].types[charJacketType]
+    const getJacketColor = customization['jacket'].colors[charJacketType][charJacketColor]
+    const jacketSprite = customization['jacket'].sprites;
+    return `${jacketSprite.replace('{sex}', getCharGender).replace('{type}', getCharJacketType).replace('{color}', getJacketColor)}`
+  }
+
   const drawPreview = async () => {
     const ctx = getCanvasContext();
 
     const bodySprite = await loadSprite(getCharBodySprite())
     const hairSprite = await loadSprite(getCharHairSprite())
     const hatSprite = await loadSprite(getCharHatSprite())
+    const jacketSprite = await loadSprite(getCharJacketSprite())
     // const img = await loadSprite('body/male/light.png'); // customization 
 
     const { zoom, frames, rowStart } = getCurrSpriteInfo();
     // console.log(previewAnimation, currFrame, rowStart, rows.length)
-    const layers = [bodySprite, hairSprite, hatSprite]
+    const layers = [bodySprite, hairSprite, hatSprite, jacketSprite]
     ctx.clearRect(0, 0, zoom, zoom * 1.2);
     ctx.beginPath();
     ctx.fillStyle = 'white';
@@ -287,6 +306,21 @@ function GameCharCreator() {
       frames,
       rowStart,
     }
+  }
+
+  const previewOnChange = (e) => {
+    let newAnim = e.target.value;
+    if (newAnim === 'stop') {
+      setCharDirection('back');
+      setCurrFrame(frame => 0);
+    }
+    setPreviewAnimation(newAnim);
+    setCurrDelay(maxAnimTime / spriteAnimations[newAnim].frames);
+  }
+
+  const zoomOnChange = (e) => {
+    const { value } = e.target;
+    setZoomScale(parseInt(value));
   }
 
   // add keyboard functionality to arrows
@@ -327,23 +361,8 @@ function GameCharCreator() {
 
   // update auto generated fields value
   useEffect(() => {
-    setFormFieldsData([charDirection, charBodyType, charBodyColor, charGender, charHairType, charHairColor, charHatType, charHatColor]);
-  }, [charDirection, charBodyType, charBodyColor, charGender, charHairType, charHairColor, charHatType, charHatColor]);
-
-  const previewOnChange = (e) => {
-    let newAnim = e.target.value;
-    if (newAnim === 'stop') {
-      setCharDirection('back');
-      setCurrFrame(frame => 0);
-    }
-    setPreviewAnimation(newAnim);
-    setCurrDelay(maxAnimTime / spriteAnimations[newAnim].frames);
-  }
-
-  const zoomOnChange = (e) => {
-    const { value } = e.target;
-    setZoomScale(parseInt(value));
-  }
+    setFormFieldsData([charDirection, charBodyType, charBodyColor, charGender, charHairType, charHairColor, charHatType, charHatColor, charJacketType, charJacketColor]);
+  }, [charDirection, charBodyType, charBodyColor, charGender, charHairType, charHairColor, charHatType, charHatColor, charJacketType, charJacketColor]);
 
   // AUTO GENERATE FORM FIELDS
   const formOnChange = [
@@ -366,7 +385,15 @@ function GameCharCreator() {
         return s;
       })
     },
-    setCharHatColor
+    setCharHatColor,
+    (newJacketType) => {
+      setCharJacketType(newJacketType)
+      setFormFieldsDataOptions(s => {
+        s[formFields.indexOf('jacketColor')] = customization['jacket'].colors[newJacketType]
+        return s;
+      })
+    },
+    setCharJacketColor
   ];
 
   const formFields = [
@@ -377,7 +404,9 @@ function GameCharCreator() {
     'hairType',
     'hairColor',
     'hatType',
-    'hatColor'
+    'hatColor',
+    'jacketType',
+    'jacketColor',
   ];
 
   const [formFieldsData, setFormFieldsData] = useState([
@@ -389,6 +418,8 @@ function GameCharCreator() {
     charHairColor,
     charHatType,
     charHatColor,
+    charJacketType,
+    charJacketColor
   ]);
 
   const [formFieldsDataOptions, setFormFieldsDataOptions] = useState([
@@ -400,6 +431,8 @@ function GameCharCreator() {
     customization['hair'].colors[charHairType],
     customization['hats'].types,
     customization['hats'].colors[charHatType],
+    customization['jacket'].types,
+    customization['jacket'].colors[charJacketType],
   ]);
 
   const createCharSelectFields = () => {
