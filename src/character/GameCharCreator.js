@@ -103,18 +103,6 @@ function GameCharCreator() {
     },
   });
 
-  const [previewAnimation, setPreviewAnimation] = useState("walk");
-  const [charDirection, setCharDirection] = useState(0);
-  const [charGender, setCharGender] = useState(0);
-  const [charBodyType, setCharBodyType] = useState(0);
-  const [charBodyColor, setCharBodyColor] = useState(0);
-  const [charHairType, setCharHairType] = useState(0);
-  const [charHairColor, setCharHairColor] = useState(0);
-  const [charHatType, setCharHatType] = useState(0);
-  const [charHatColor, setCharHatColor] = useState(0);
-  const [charJacketType, setCharJacketType] = useState(0);
-  const [charJacketColor, setCharJacketColor] = useState(0);
-
   const spriteAnimations = {
     'stop': {
       start: 8,
@@ -185,9 +173,22 @@ function GameCharCreator() {
     },
   }
 
+  // character customization
+  const [previewAnimation, setPreviewAnimation] = useState("walk");
+  const [charDirection, setCharDirection] = useState(0);
+  const [charGender, setCharGender] = useState(0);
+  const [charBodyType, setCharBodyType] = useState(0);
+  const [charBodyColor, setCharBodyColor] = useState(0);
+  const [charHairType, setCharHairType] = useState(0);
+  const [charHairColor, setCharHairColor] = useState(0);
+  const [charHatType, setCharHatType] = useState(0);
+  const [charHatColor, setCharHatColor] = useState(0);
+  const [charJacketType, setCharJacketType] = useState(0);
+  const [charJacketColor, setCharJacketColor] = useState(0);
+  // Cache images
+  const [sprites, setSprites] = useState({});
   // game canvas
   const canvasRef = useRef(null);
-
   const baseScale = 64;
   const maxAnimTime = 800;
   // current zoom scale, starts at 1x
@@ -198,15 +199,37 @@ function GameCharCreator() {
   const [currDelay, setCurrDelay] = useState(maxAnimTime / spriteAnimations[previewAnimation].frames);
   // time of each frame
   const animFrame = useDebounce(currFrame, currDelay);
-
-  // Cache images
-  const [sprites, setSprites] = useState({});
-
+  const getCurrSpriteInfo = () => {
+    const spriteAnim = spriteAnimations[previewAnimation];
+    const rows = spriteAnim.rows;
+    const frames = spriteAnim.frames;
+    const rowIndex = rows.indexOf(`${previewAnimation}_${customization['direction'].types[charDirection]}`);
+    const rowStart = spriteAnim.start + rowIndex;
+    const zoom = getScale();
+    return {
+      zoom,
+      rows,
+      frames,
+      rowStart,
+    }
+  }
+  const previewOnChange = (e) => {
+    let newAnim = e.target.value;
+    if (newAnim === 'stop') {
+      setCharDirection('back');
+      setCurrFrame(frame => 0);
+    }
+    setPreviewAnimation(newAnim);
+    setCurrDelay(maxAnimTime / spriteAnimations[newAnim].frames);
+  }
+  const zoomOnChange = (e) => {
+    const { value } = e.target;
+    setZoomScale(parseInt(value));
+  }
   const getCanvasContext = () => {
     return canvasRef.current ? canvasRef.current.getContext('2d') : null;
   }
-
-  function loadImage(filename) {
+  const loadImage = (filename) => {
     return new Promise(resolve => {
       let filenameKey = filename.replace(/[\\/.]/gi, '');
       const image = new Image();
@@ -217,7 +240,6 @@ function GameCharCreator() {
       setSprites({ ...sprites, [filenameKey]: image })
     });
   }
-
   const loadSprite = async (filename, ...args) => {
     if (filename !== null) {
       let filenameKey = filename.replace(/[\\/.]/gi, '');
@@ -230,7 +252,6 @@ function GameCharCreator() {
     }
     return null
   }
-
   const getScale = () => baseScale * zoomScale;
   const getCharBodySprite = () => {
     const getCharGender = customization['sex'].types[charGender]
@@ -252,7 +273,6 @@ function GameCharCreator() {
     const hairSprite = customization['hats'].sprites;
     return `${hairSprite.replace('{type}', getCharHatType).replace('{color}', getHatColor)}`
   }
-
   const getCharJacketSprite = () => {
     if (charJacketType === 0) return null;
     const getCharGender = customization['sex'].types[charGender]
@@ -292,37 +312,6 @@ function GameCharCreator() {
       }
     }
   }
-
-  const getCurrSpriteInfo = () => {
-    const spriteAnim = spriteAnimations[previewAnimation];
-    const rows = spriteAnim.rows;
-    const frames = spriteAnim.frames;
-    const rowIndex = rows.indexOf(`${previewAnimation}_${customization['direction'].types[charDirection]}`);
-    const rowStart = spriteAnim.start + rowIndex;
-    const zoom = getScale();
-    return {
-      zoom,
-      rows,
-      frames,
-      rowStart,
-    }
-  }
-
-  const previewOnChange = (e) => {
-    let newAnim = e.target.value;
-    if (newAnim === 'stop') {
-      setCharDirection('back');
-      setCurrFrame(frame => 0);
-    }
-    setPreviewAnimation(newAnim);
-    setCurrDelay(maxAnimTime / spriteAnimations[newAnim].frames);
-  }
-
-  const zoomOnChange = (e) => {
-    const { value } = e.target;
-    setZoomScale(parseInt(value));
-  }
-
   // add keyboard functionality to arrows
   useEffect(() => {
     document.addEventListener('keydown', function (e) {
