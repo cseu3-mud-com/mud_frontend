@@ -113,7 +113,7 @@ label {
   color: rgba(255, 255, 255, .75);
 }
 
-input {
+input, select {
   outline: 0;
   color: white;
   font-family: inherit;
@@ -124,6 +124,43 @@ input {
   transition: all .33s ease-in-out;
   &:focus {
     border-color: white;
+  }
+  &.chatInput {
+    &::-webkit-input-placeholder {
+      opacity: .5;
+      color: white;
+    }
+    &::-moz-placeholder {
+      opacity: .5;
+      color: white;
+    }
+    &:-ms-input-placeholder {
+      opacity: .5;
+      color: white;
+    }
+    &:-moz-placeholder {
+      opacity: .5;
+      color: white;
+    }
+  }
+  &[type="number"] {
+    display: inline-block;
+    width: auto;
+  }
+}
+select {
+  font-size: 1.5rem;
+  display: inline-block;
+  height: 3rem;
+  option {
+    background: black;
+  }
+}
+
+.charOption {
+  margin-top: 1rem;
+  h4 {
+    margin-bottom: .5rem;
   }
 }
 

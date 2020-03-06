@@ -9,45 +9,57 @@ const Canvas = styled.canvas`
 function GameCharCreator() {
   // eslint-disable-next-line no-unused-vars
   const [customization, setCustomization] = useState({
+    'direction': {
+      types: ['back', 'front', 'left', 'right']
+    },
     'sex': {
       types: ['male', 'female'],
     },
     'body': {
-      types: ['human', 'reptiles', 'orcs', 'skeleton', 'special', 'pregnant', 'child'],
+      types: ['human'], // 'reptiles', 'orcs', 'skeleton', 'special', 'pregnant', 'child'
       colors: [
-        ['white', 'black', 'olive', 'brown', 'peach', 'light', 'dark', 'dark2', 'tanned', 'tanned2', 'muscular_white', 'muscular_dark']
+        ['white', 'black', 'olive', 'brown', 'peach', 'light', 'dark', 'dark2', 'tanned', 'tanned2'] //  'muscular_white', 'muscular_dark'
       ],
-      sprites: [
-        ['body/male/{color}.png', 'body/female/{color}.png']
-      ]
+      sprites: 'body/{sex}/{color}.png'
     },
     'hair': {
-      types: [],
-      sprites: []
+      types: ['plain', 'bedhead', 'loose'],
+      types_sex: [ // supposed to restrict hair style to specific gender
+        'male', 'male', 'female'
+      ],
+      colors: [
+        // plain
+        ['blonde', 'blue', 'brunette', 'green', 'pink', 'raven', 'dark_blonde', 'white_blonde'],
+        // bedhead
+        ['blonde', 'blue', 'brunette', 'green', 'pink', 'raven', 'redhead', 'white_blonde'],
+        // loose
+        ['black', 'blonde', 'blonde2', 'blue', 'blue2', 'brown', 'brunette', 'brunette2', 'dark-blonde', 'gray', 'green', 'green2', 'light-blonde', 'light-blonde2', 'pink', 'pink2', 'raven', 'raven2', 'redhead', 'ruby-red', 'white', 'white-blonde', 'white-blonde2', 'white-cyan'],
+      ],
+      sprites: 'hair/{sex}/{type}/{color}.png'
     },
     'hats': {
-      types: [],
-      sprites: []
-    },
-    'eyes': {
-      types: [],
-      sprites: []
-    },
-    'facial': {
-      types: [],
-      sprites: []
-    },
-    'nose': {
-      types: [],
-      sprites: []
-    },
-    'ears': {
-      types: [],
-      sprites: []
+      types: [
+        'No Hat', 'plate', 'horned'
+      ],
+      colors: [
+        ['Select a hat first!'],
+        // plate
+        ['2', '3', '4', '5', '6', '7'],
+        // horned
+        ['32_wd', '33_wd', '34_wd', '35_wd', '36_wd', '37_wd'],
+      ],
+      sprites: 'head/{type}/{color}.png'
     },
     'jacket': {
-      types: [],
-      sprites: []
+      types: [
+        'No Jacket', 'tabard', 'formal'
+      ],
+      colors: [
+        ['Select a jacket first!'],
+        ['default', 'black', 'blue', 'green', 'purple', 'red', 'yellow'],
+        ['vest', 'vest-stripes', 'vest-green', 'vest-green-stripes', 'iverness', 'jacket-black', 'jacket-brown', 'jacket-brown-stripes', 'jacket-tan', 'trenchcoat-dark', 'trenchcoat-grey'],
+      ],
+      sprites: 'torso/{sex}/chain/{type}/{color}.png'
     },
     'clothes': {
       types: [],
@@ -73,15 +85,23 @@ function GameCharCreator() {
       types: [],
       sprites: []
     },
+    'eyes': {
+      types: [],
+      sprites: []
+    },
+    'facial': {
+      types: [],
+      sprites: []
+    },
+    'nose': {
+      types: [],
+      sprites: []
+    },
+    'ears': {
+      types: [],
+      sprites: []
+    },
   });
-  
-  const [previewAnimation, setPreviewAnimation] = useState("walk");
-  const [charDirection, setCharDirection] = useState('back');
-
-  const [charGender, setCharGender] = useState(0);
-  const [charBodyType, setCharBodyType] = useState(0);
-  const [charBodyColor, setCharBodyColor] = useState(0);
-  const [charHair, setCharHair] = useState(0);
 
   const spriteAnimations = {
     'stop': {
@@ -153,28 +173,63 @@ function GameCharCreator() {
     },
   }
 
+  // character customization
+  const [previewAnimation, setPreviewAnimation] = useState("walk");
+  const [charDirection, setCharDirection] = useState(0);
+  const [charGender, setCharGender] = useState(0);
+  const [charBodyType, setCharBodyType] = useState(0);
+  const [charBodyColor, setCharBodyColor] = useState(0);
+  const [charHairType, setCharHairType] = useState(0);
+  const [charHairColor, setCharHairColor] = useState(0);
+  const [charHatType, setCharHatType] = useState(0);
+  const [charHatColor, setCharHatColor] = useState(0);
+  const [charJacketType, setCharJacketType] = useState(0);
+  const [charJacketColor, setCharJacketColor] = useState(0);
+  // Cache images
+  const [sprites, setSprites] = useState({});
   // game canvas
   const canvasRef = useRef(null);
-
   const baseScale = 64;
   const maxAnimTime = 800;
   // current zoom scale, starts at 1x
-  const [zoomScale, setZoomScale] = useState(1);
+  const [zoomScale, setZoomScale] = useState(2);
   // current frame of current animation
   const [currFrame, setCurrFrame] = useState(0);
   // current delay per frame, so all animations have the same end time
   const [currDelay, setCurrDelay] = useState(maxAnimTime / spriteAnimations[previewAnimation].frames);
   // time of each frame
   const animFrame = useDebounce(currFrame, currDelay);
-
-  // Cache images
-  const [sprites, setSprites] = useState({});
-
+  const getCurrSpriteInfo = () => {
+    const spriteAnim = spriteAnimations[previewAnimation];
+    const rows = spriteAnim.rows;
+    const frames = spriteAnim.frames;
+    const rowIndex = rows.indexOf(`${previewAnimation}_${customization['direction'].types[charDirection]}`);
+    const rowStart = spriteAnim.start + rowIndex;
+    const zoom = getScale();
+    return {
+      zoom,
+      rows,
+      frames,
+      rowStart,
+    }
+  }
+  const previewOnChange = (e) => {
+    let newAnim = e.target.value;
+    if (newAnim === 'stop') {
+      setCharDirection('back');
+      setCurrFrame(frame => 0);
+    }
+    setPreviewAnimation(newAnim);
+    setCurrDelay(maxAnimTime / spriteAnimations[newAnim].frames);
+  }
+  const zoomOnChange = (e) => {
+    const { value } = e.target;
+    setZoomScale(parseInt(value));
+  }
   const getCanvasContext = () => {
     return canvasRef.current ? canvasRef.current.getContext('2d') : null;
   }
-
-  function loadImage(filename) {
+  const loadImage = (filename) => {
     return new Promise(resolve => {
       let filenameKey = filename.replace(/[\\/.]/gi, '');
       const image = new Image();
@@ -185,34 +240,70 @@ function GameCharCreator() {
       setSprites({ ...sprites, [filenameKey]: image })
     });
   }
-
   const loadSprite = async (filename, ...args) => {
-    let filenameKey = filename.replace(/[\\/.]/gi, '');
-    let sprite = sprites[filenameKey] ? sprites[filenameKey] : null;
-    if (!sprite) {
-      return await loadImage(filename)
+    if (filename !== null) {
+      let filenameKey = filename.replace(/[\\/.]/gi, '');
+      let sprite = sprites[filenameKey] ? sprites[filenameKey] : null;
+      if (!sprite) {
+        console.log('loaded', filename)
+        return await loadImage(filename)
+      }
+      return sprite;
     }
-    return sprite;
+    return null
   }
-
   const getScale = () => baseScale * zoomScale;
   const getCharBodySprite = () => {
+    const getCharGender = customization['sex'].types[charGender]
     const bodyColor = customization['body'].colors[charBodyType][charBodyColor];
-    const bodySprite = customization['body'].sprites[charBodyType][charGender];
-    return `${bodySprite.replace('{color}', bodyColor)}`
+    const bodySprite = customization['body'].sprites;
+    return `${bodySprite.replace('{sex}', getCharGender).replace('{color}', bodyColor)}`
+  }
+  const getCharHairSprite = () => {
+    const getCharGender = customization['sex'].types[charGender]
+    const getCharHairType = customization['hair'].types[charHairType]
+    const getHairColor = customization['hair'].colors[charHairType][charHairColor]
+    const hairSprite = customization['hair'].sprites;
+    return `${hairSprite.replace('{sex}', getCharGender).replace('{type}', getCharHairType).replace('{color}', getHairColor)}`
+  }
+  const getCharHatSprite = () => {
+    if (charHatType === 0) return null;
+    const getCharHatType = customization['hats'].types[charHatType]
+    const getHatColor = customization['hats'].colors[charHatType][charHatColor]
+    const hairSprite = customization['hats'].sprites;
+    return `${hairSprite.replace('{type}', getCharHatType).replace('{color}', getHatColor)}`
+  }
+  const getCharJacketSprite = () => {
+    if (charJacketType === 0) return null;
+    const getCharGender = customization['sex'].types[charGender]
+    const getCharJacketType = customization['jacket'].types[charJacketType]
+    const getJacketColor = customization['jacket'].colors[charJacketType][charJacketColor]
+    const jacketSprite = customization['jacket'].sprites;
+    return `${jacketSprite.replace('{sex}', getCharGender).replace('{type}', getCharJacketType).replace('{color}', getJacketColor)}`
   }
 
   const drawPreview = async () => {
     const ctx = getCanvasContext();
 
     const bodySprite = await loadSprite(getCharBodySprite())
-
-    // const img = await loadSprite('body/male/light.png'); // customization
+    const hairSprite = await loadSprite(getCharHairSprite())
+    const hatSprite = await loadSprite(getCharHatSprite())
+    const jacketSprite = await loadSprite(getCharJacketSprite())
+    // const img = await loadSprite('body/male/light.png'); // customization 
 
     const { zoom, frames, rowStart } = getCurrSpriteInfo();
     // console.log(previewAnimation, currFrame, rowStart, rows.length)
-    ctx.clearRect(0, 0, zoom, zoom);
-    ctx.drawImage(bodySprite, currFrame * 64, rowStart * 64, 64, 64, 0, 0, zoom, zoom);
+    const layers = [bodySprite, hairSprite, hatSprite, jacketSprite]
+    ctx.clearRect(0, 0, zoom, zoom * 1.2);
+    ctx.beginPath();
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, zoom, zoom * 1.2);
+
+    layers.forEach(layer => {
+      if (layer !== null) {
+        ctx.drawImage(layer, currFrame * 64, rowStart * 64, 64, 64, 0, 0, zoom, zoom);
+      }
+    })
     if (frames > 0) {
       if (currFrame + 1 < frames) {
         setCurrFrame(frame => frame + 1)
@@ -221,40 +312,25 @@ function GameCharCreator() {
       }
     }
   }
-
-  const getCurrSpriteInfo = () => {
-    const spriteAnim = spriteAnimations[previewAnimation];
-    const rows = spriteAnim.rows;
-    const frames = spriteAnim.frames;
-    const rowIndex = rows.indexOf(`${previewAnimation}_${charDirection}`);
-    const rowStart = spriteAnim.start + rowIndex;
-    const zoom = getScale();
-    return {
-      zoom,
-      rows,
-      frames,
-      rowStart,
-    }
-  }
-
+  // add keyboard functionality to arrows
   useEffect(() => {
     document.addEventListener('keydown', function (e) {
       const key = e.which;
       if ([37, 38, 39, 40].includes(key)) e.preventDefault();
       else return;
-      // console.log(key);
+      console.log('Key pressed:', key);
       switch (key) {
         case 37:
-          setCharDirection('left');
+          setCharDirection(2);
           break;
         case 38:
-          setCharDirection('front');
+          setCharDirection(1);
           break;
         case 39:
-          setCharDirection('right');
+          setCharDirection(3);
           break;
         case 40:
-          setCharDirection('back');
+          setCharDirection(0);
           break;
         default:
           break;
@@ -265,147 +341,140 @@ function GameCharCreator() {
     }
   }, []);
 
+  // canvas draw
   useEffect(() => {
     // console.log('drawing', animFrame, previewAnimation)
     drawPreview()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animFrame, charDirection, previewAnimation]);
 
-  const previewOnChange = (e) => {
-    let newAnim = e.target.value;
-    if (newAnim === 'stop') {
-      setCharDirection('back');
-      setCurrFrame(frame => 0);
+  // update auto generated fields value
+  useEffect(() => {
+    setFormFieldsData([charDirection, charBodyType, charBodyColor, charGender, charHairType, charHairColor, charHatType, charHatColor, charJacketType, charJacketColor]);
+  }, [charDirection, charBodyType, charBodyColor, charGender, charHairType, charHairColor, charHatType, charHatColor, charJacketType, charJacketColor]);
+
+  // AUTO GENERATE FORM FIELDS
+  const formOnChange = [
+    setCharDirection,
+    setCharBodyType,
+    setCharBodyColor,
+    setCharGender,
+    (newHairType) => {
+      setCharHairType(newHairType)
+      setFormFieldsDataOptions(s => {
+        s[formFields.indexOf('hairColor')] = customization['hair'].colors[newHairType]
+        return s;
+      })
+    },
+    setCharHairColor,
+    (newHatType) => {
+      setCharHatType(newHatType)
+      setFormFieldsDataOptions(s => {
+        s[formFields.indexOf('hatColor')] = customization['hats'].colors[newHatType]
+        return s;
+      })
+    },
+    setCharHatColor,
+    (newJacketType) => {
+      setCharJacketType(newJacketType)
+      setFormFieldsDataOptions(s => {
+        s[formFields.indexOf('jacketColor')] = customization['jacket'].colors[newJacketType]
+        return s;
+      })
+    },
+    setCharJacketColor
+  ];
+
+  const formFields = [
+    'direction',
+    'bodyType',
+    'bodyColor',
+    'gender',
+    'hairType',
+    'hairColor',
+    'hatType',
+    'hatColor',
+    'jacketType',
+    'jacketColor',
+  ];
+
+  const [formFieldsData, setFormFieldsData] = useState([
+    charDirection,
+    charBodyType,
+    charBodyColor,
+    charGender,
+    charHairType,
+    charHairColor,
+    charHatType,
+    charHatColor,
+    charJacketType,
+    charJacketColor
+  ]);
+
+  const [formFieldsDataOptions, setFormFieldsDataOptions] = useState([
+    customization['direction'].types,
+    customization['body'].types,
+    customization['body'].colors[charBodyType],
+    customization['sex'].types,
+    customization['hair'].types,
+    customization['hair'].colors[charHairType],
+    customization['hats'].types,
+    customization['hats'].colors[charHatType],
+    customization['jacket'].types,
+    customization['jacket'].colors[charJacketType],
+  ]);
+
+  const createCharSelectFields = () => {
+    const fieldOnChange = (setState) => e => {
+      const { value } = e.target;
+      setState(parseInt(value));
     }
-    setPreviewAnimation(newAnim);
-    setCurrDelay(maxAnimTime / spriteAnimations[newAnim].frames);
-  }
-
-  const zoomOnChange = (e) => {
-    const newZoom = e.target.value;
-    setZoomScale(newZoom);
-  }
-
-  const directionOnChange = (e) => {
-    const { value } = e.target;
-    setCharDirection(value)
-  }
-  const bodyTypeOnChange = (e) => {
-    const { value } = e.target;
-    setCharBodyType(value)
-  }
-  const bodyColorOnChange = (e) => {
-    const { value } = e.target;
-    setCharBodyColor(value)
-  }
-  const genderOnChange = (e) => {
-    const { value } = e.target;
-    setCharGender(value)
-  }
-  const hairOnChange = (e) => {
-    const { value } = e.target;
-    setCharHair(value)
+    return formFields.map((field, i) => (<div key={`char${field}`} className={`charOption char${field}`}>
+      <h4>{field}:</h4>
+      <select name={field} value={formFieldsData[i]} onChange={fieldOnChange(formOnChange[i])}>
+        {
+          formFieldsDataOptions[i].map(
+            (info, index) => <option
+              key={`${field}_${info}`}
+              value={index}
+            >
+              {info[0].toUpperCase() + info.slice(1)}
+            </option>
+          )
+        }
+      </select>
+    </div>));
   }
 
   return <div className="characterCreation">
-    <div id="previewAnimationsBox">
-      Preview Animation:
-		  <select id="whichAnim" name="previewAnimation" value={previewAnimation} onChange={previewOnChange}>
-        {
-          Object.keys(spriteAnimations).map(
-            (anim) => <option
-              key={`anim_${anim}`}
-              value={anim}
-            >
-              {anim[0].toUpperCase() + anim.slice(1)}
-            </option>
-          )
-        }
-      </select>
-      <br />
-      <br />
-      Zoom:
-      <input type="number" value={zoomScale} onChange={zoomOnChange} />
-      <br />
-      <br />
-      Direction:
-		  <select name="direction" value={charDirection} onChange={directionOnChange}>
-        {
-          ['front', 'left', 'back', 'right'].map(
-            (dir, i) => <option
-              key={`direction_${dir}`}
-              value={dir}
-            >
-              {dir[0].toUpperCase() + dir.slice(1)}
-            </option>
-          )
-        }
-      </select>
-      <br />
-      <br />
-      Body Type:
-		  <select name="bodyType" value={charBodyType} onChange={bodyTypeOnChange}>
-        {
-          customization['body'].types.map(
-            (type, i) => <option
-              key={`body_${type}`}
-              value={i}
-            >
-              {type[0].toUpperCase() + type.slice(1)}
-            </option>
-          )
-        }
-      </select>
-      <br />
-      <br />
-      Body Color:
-		  <select name="bodyColor" value={charBodyColor} onChange={bodyColorOnChange}>
-        {
-          customization['body'].colors[charBodyType].map(
-            (color, i) => <option
-              key={`${customization['body'].types[charBodyType]}_${color}`}
-              value={i}
-            >
-              {color[0].toUpperCase() + color.slice(1)}
-            </option>
-          )
-        }
-      </select>
-      <br />
-      <br />
-      Gender:
-		  <select name="gender" value={charGender} onChange={genderOnChange}>
-        {
-          customization['sex'].types.map(
-            (gender, i) => <option
-              key={`sex_${gender}`}
-              value={i}
-            >
-              {gender[0].toUpperCase() + gender.slice(1)}
-            </option>
-          )
-        }
-      </select>
-      <br />
-      <br />
-      Hair:
-		  <select name="hair" value={charHair} onChange={hairOnChange}>
-        {
-          customization['hair'].types.map(
-            (type, i) => <option
-              key={`hair_${type}`}
-              value={i}
-            >
-              {type[0].toUpperCase() + type.slice(1)}
-            </option>
-          )
-        }
-      </select>
-      <br />
-      <br />
-      <Canvas id="characterPreview" ref={canvasRef} width={getScale()} height={getScale() * 1.2}></Canvas>
+    <div className="flex two">
+      <div className="column">
+        Preview Animation:
+        <select id="whichAnim" name="previewAnimation" value={previewAnimation} onChange={previewOnChange}>
+          {
+            Object.keys(spriteAnimations).map(
+              (anim) => <option
+                key={`anim_${anim}`}
+                value={anim}
+              >
+                {anim[0].toUpperCase() + anim.slice(1)}
+              </option>
+            )
+          }
+        </select>
+        <br />
+        <br />
+        Zoom:
+          <input type="number" value={zoomScale} onChange={zoomOnChange} />
+        <br />
+        <br />
+        {createCharSelectFields()}
+      </div>
+      <div className="column">
+        <Canvas id="characterPreview" ref={canvasRef} width={getScale()} height={getScale() * 1.2}></Canvas>
+      </div>
     </div>
-  </div>;
+  </div>
 }
 
 export default GameCharCreator;

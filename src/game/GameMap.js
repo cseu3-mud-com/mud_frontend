@@ -126,7 +126,8 @@ function GameMap(props) {
           setSendChat(false);
         });
     }
-  }, [sendChat]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sendChat])
 
   const changePlayerDirection = e => {
     const { value } = e.target;
@@ -219,7 +220,40 @@ function GameMap(props) {
     <>
       <Styl.BackgroundImage src="backgrounds/3.jpg" gradient={true} />
       <Styl.OverlayContent className="map">
-        <Styl.Title>Loading...</Styl.Title>
+        <Styl.Title className="medium">{initState.init.room.title}</Styl.Title>
+        <div className="flex twoWide">
+          <div className="column">
+            <Styl.Description>{initState.init.room.description}</Styl.Description>
+          </div>
+          <div className="column">
+            <DrawMap>
+              {
+                gameMap.map(
+                  row => row.map(
+                    (cell, i) => <Cell key={`${row}-${i}`} room={cell} isPlayerRoom={cell === initState.init.room.id} />
+                  )
+                )
+              }
+            </DrawMap>
+          </div>
+        </div>
+        <Styl.PlayerControls className="flex twoWide">
+          <div className="column">
+            <Styl.Title className="small">Room Chat</Styl.Title>
+            <Styl.Chat id="chatroom">
+              {messages.map((message, i) => <p key={i}>{message}</p>)}
+            </Styl.Chat>
+            <input type="text" autoFocus={true} value={myMessage} onChange={changeMyMessage} placeholder="Say something..." className="chatInput" />
+          </div>
+          <div className="column">
+            <Styl.PlayerMovement>
+              <Styl.MoveBtn onClick={changePlayerDirection} value="n" className="north">N</Styl.MoveBtn>
+              <Styl.MoveBtn onClick={changePlayerDirection} value="w" className="west">W</Styl.MoveBtn>
+              <Styl.MoveBtn onClick={changePlayerDirection} value="s" className="south">S</Styl.MoveBtn>
+              <Styl.MoveBtn onClick={changePlayerDirection} value="e" className="east">E</Styl.MoveBtn>
+            </Styl.PlayerMovement>
+          </div>
+        </Styl.PlayerControls>
       </Styl.OverlayContent>
     </>
   );
