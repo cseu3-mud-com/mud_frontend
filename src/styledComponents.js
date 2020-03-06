@@ -121,8 +121,10 @@ const PlayerControls = styled.div`
 const Chat = styled.div`
   display: block;
   width: 100%;
-  height: 170px;
+  height: 150px;
   overflow-y: auto;
+  background: rgba(0,0,0,.5);
+  padding: 1rem;
   p {
     line-height: 1.5rem
   }

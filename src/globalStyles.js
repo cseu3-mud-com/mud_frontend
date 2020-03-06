@@ -126,8 +126,6 @@ input, select {
     border-color: white;
   }
   &.chatInput {
-    border-color: white;
-    background: rgba(255, 255, 255, .1);
     &::-webkit-input-placeholder {
       opacity: .5;
       color: white;

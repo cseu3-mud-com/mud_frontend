@@ -167,7 +167,7 @@ function GameMap(props) {
             <Styl.Chat id="chatroom">
               {messages.map((message, i) => <p key={i}>{message}</p>)}
             </Styl.Chat>
-            <input type="text" value={myMessage} onChange={changeMyMessage} placeholder="Say something..." className="chatInput" />
+            <input type="text" autoFocus={true} value={myMessage} onChange={changeMyMessage} placeholder="Say something..." className="chatInput" />
           </div>
           <div className="column">
             <Styl.PlayerMovement>
